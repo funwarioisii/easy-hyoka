@@ -1,6 +1,6 @@
 # easy-hyoka
 
-GitHub活動からAIで評価サマリーを生成する
+GitHubでのPull RequestやIssueからAIで評価サマリーを生成する
 
 ## セットアップ
 
