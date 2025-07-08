@@ -118,29 +118,29 @@ async fn main() -> Result<()> {
         }
         
         let username = String::from_utf8_lossy(&output.stdout).trim().to_string();
-        println!("📝 現在のGitHubユーザー: {}", username);
+        println!("現在のGitHubユーザー: {}", username);
         args.author = Some(username);
     }
 
     // OpenAI APIキーの確認
     let api_key = env::var("OPENAI_API_KEY").expect("OPENAI_API_KEY環境変数が設定されていません");
 
-    println!("🔍 GitHub PR/Issuesを取得中...");
+    println!("GitHub PR/Issuesを取得中...");
 
     // PR取得
     let prs = fetch_prs(&args)?;
-    println!("  ✅ {} 件のPRを取得しました", prs.len());
+    println!("  {} 件のPRを取得しました", prs.len());
 
     // Issues取得
     let issues = fetch_issues(&args)?;
-    println!("  ✅ {} 件のIssuesを取得しました", issues.len());
+    println!("  {} 件のIssuesを取得しました", issues.len());
 
     // データを整形してOpenAIに送信
-    println!("\n🤖 OpenAIで実績サマリーを生成中...");
+    println!("\nOpenAIで実績サマリーを生成中...");
     let summary = generate_summary(&api_key, &prs, &issues, &args).await?;
 
     // 結果を出力
-    println!("\n📊 実績サマリー");
+    println!("\n実績サマリー");
     println!("=====================================");
     println!("{}", summary);
 
@@ -176,12 +176,12 @@ fn fetch_prs(args: &Args) -> Result<Vec<PullRequest>> {
     
     // 1000件に達した場合は警告
     if prs.len() == 1000 {
-        println!("  ⚠️  検索結果が1000件の上限に達しました。すべてのPRが取得できていない可能性があります。");
+        println!("  警告: 検索結果が1000件の上限に達しました。すべてのPRが取得できていない可能性があります。");
         println!("      より詳細な期間指定（--since, --until）で実行することをお勧めします。");
     }
     
     // 各PRのコメントを取得（最新の5件のPRのみ）
-    println!("  📝 最新のPRのコメントを取得中...");
+    println!("  最新のPRのコメントを取得中...");
     for pr in prs.iter_mut().take(5) {
         if let Ok(comments) = fetch_pr_comments(&args.owner, &pr.repository.name_with_owner, pr.number) {
             pr.comments = comments;
@@ -216,12 +216,12 @@ fn fetch_issues(args: &Args) -> Result<Vec<Issue>> {
     
     // 1000件に達した場合は警告
     if issues.len() == 1000 {
-        println!("  ⚠️  検索結果が1000件の上限に達しました。すべてのIssueが取得できていない可能性があります。");
+        println!("  警告: 検索結果が1000件の上限に達しました。すべてのIssueが取得できていない可能性があります。");
         println!("      より詳細な期間指定（--since, --until）で実行することをお勧めします。");
     }
     
     // 各Issueのコメントを取得（最新の5件のみ）
-    println!("  📝 最新のIssueのコメントを取得中...");
+    println!("  最新のIssueのコメントを取得中...");
     for issue in issues.iter_mut().take(5) {
         if let Ok(comments) = fetch_issue_comments(&args.owner, &issue.repository.name_with_owner, issue.number) {
             issue.comments = comments;
